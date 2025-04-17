@@ -61,17 +61,36 @@ def get_songs_by_artists(token, artist_id):
     json_result = json.loads(result.content)['tracks']
     return json_result
 
+
+def search_for_album(token, artist_name):
+    url = 'https://api.spotify.com/v1/search'
+    headers = get_auth_header(token)
+    query = f'?q=remaster%2520track%3ADoxy%2520artist%3A{artist_name}&type=album' # limit makes this so it only search for 1
+    query_url = url + query
+    result = get(query_url, headers=headers)
+    json_result = json.loads(result.content)['albums']['items']
+    return json_result
+
+def get_tracks_from_albums(token, album_id):
+    url = f'https://api.spotify.com/v1/albums/{album_id}/tracks'
+    headers = get_auth_header(token)
+    result = get(url, headers=headers)
+    response = json.loads(result.content)
+    return response.get('items', [])
+
+
 def test():
     token = get_token()
-    result = get_several_artist(token, 'country', 10)
-    for idx, singer in enumerate(result):
-        print(f"{idx + 1}. {singer['name']}") # the quotes have to be different from ' and "
-
-
-    # result = search_for_artist(token, 'Ken')
-    # print(result['name'])
-    # artist_id = result['id']
-    # songs = get_songs_by_artists(token, artist_id)
-
-    # for idx, song in enumerate(songs):
-    #     print(f"{idx + 1}. {song['name']}") # the quotes have to be different from ' and "
+    # fetch your albums
+    album = search_for_album(token, 'Drake')
+    album_id_list = [a['id'] for a in album]
+    total_song_list = []
+    # for each album ID, fetch its tracks and extend your master list
+    for album_id in album_id_list:
+        # print(type(album_id))
+        tracks = get_tracks_from_albums(token, album_id)
+        total_song_list.extend(tracks)
+    # now total_song_list contains every track dict from each album
+    print(f"Found {len(total_song_list)} total tracks across {len(album_id_list)} albums")
+    print(total_song_list)
+test()
