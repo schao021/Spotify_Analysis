@@ -43,7 +43,17 @@ def search_for_artist(token, artist_name):
         print('No artist with this name exists')
         return None
     return json_result[0]
-    
+
+# Retrieve a list of the top artists for a specific genre
+def get_several_artist(token, genre, amount):
+    url = 'https://api.spotify.com/v1/search'
+    headers = get_auth_header(token)
+    query = f'?q=year%3A2025%20genre%3A{genre}&type=artist&limit={amount}'
+    query_url = url + query
+    result = get(query_url, headers=headers)
+    json_result = json.loads(result.content)['artists']['items']
+    return json_result
+
 def get_songs_by_artists(token, artist_id):
     url = f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks?country=US' # Need to have country
     headers = get_auth_header(token)
@@ -51,11 +61,17 @@ def get_songs_by_artists(token, artist_id):
     json_result = json.loads(result.content)['tracks']
     return json_result
 
-token = get_token()
-result = search_for_artist(token, 'Ken')
-print(result['name'])
-artist_id = result['id']
-songs = get_songs_by_artists(token, artist_id)
+def test():
+    token = get_token()
+    result = get_several_artist(token, 'country', 10)
+    for idx, singer in enumerate(result):
+        print(f"{idx + 1}. {singer['name']}") # the quotes have to be different from ' and "
 
-for idx, song in enumerate(songs):
-    print(f"{idx + 1}. {song['name']}") # the quotes have to be different from ' and "
+
+    # result = search_for_artist(token, 'Ken')
+    # print(result['name'])
+    # artist_id = result['id']
+    # songs = get_songs_by_artists(token, artist_id)
+
+    # for idx, song in enumerate(songs):
+    #     print(f"{idx + 1}. {song['name']}") # the quotes have to be different from ' and "
