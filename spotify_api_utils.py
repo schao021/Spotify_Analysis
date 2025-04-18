@@ -78,6 +78,14 @@ def get_tracks_from_albums(token, album_id):
     response = json.loads(result.content)
     return response.get('items', [])
 
+def get_tracks_using_id(token, song_id):
+    url = f'https://api.spotify.com/v1/tracks/{song_id}'
+    headers = get_auth_header(token)
+    result = get(url, headers=headers)
+    json_result = json.loads(result.content)
+    return json_result
+    # return response.get('items', [])
+    # return response.get('items', [])
 
 def test():
     token = get_token()
@@ -85,6 +93,7 @@ def test():
     album = search_for_album(token, 'Drake')
     album_id_list = [a['id'] for a in album]
     total_song_list = []
+    total_track_list = []
     # for each album ID, fetch its tracks and extend your master list
     for album_id in album_id_list:
         # print(type(album_id))
@@ -92,5 +101,10 @@ def test():
         total_song_list.extend(tracks)
     # now total_song_list contains every track dict from each album
     print(f"Found {len(total_song_list)} total tracks across {len(album_id_list)} albums")
-    print(total_song_list)
-test()
+    # print(total_song_list)
+    for track_id in total_song_list:
+        tracks = get_tracks_using_id(token, track_id['id'])
+        print(tracks)
+        total_track_list.extend(tracks)
+    print('done')
+# test()
