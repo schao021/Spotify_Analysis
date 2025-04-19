@@ -54,7 +54,7 @@ def get_several_artist(token, genre, amount):
     json_result = json.loads(result.content)['artists']['items']
     return json_result
 
-def get_songs_by_artists(token, artist_id):
+def get_songs_by_artists(token, artist_id): # Can only fetch top 10
     url = f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks?country=US' # Need to have country
     headers = get_auth_header(token)
     result = get(url, headers=headers)
@@ -84,8 +84,6 @@ def get_tracks_using_id(token, song_id):
     result = get(url, headers=headers)
     json_result = json.loads(result.content)
     return json_result
-    # return response.get('items', [])
-    # return response.get('items', [])
 
 def test():
     token = get_token()
